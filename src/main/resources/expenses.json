@@ -1,0 +1,50 @@
+[
+  {
+    "expenseType": 1,
+    "date": "2024-09-01",
+    "amount": 3000.00,
+    "category": "Salary",
+    "account": "Bank Account",
+    "note": "September Salary"
+  },
+  {
+    "expenseType": 0,
+    "date": "2024-09-02",
+    "amount": 150.75,
+    "category": "Groceries",
+    "account": "Cash",
+    "note": "Weekly groceries shopping"
+  },
+  {
+    "expenseType": 0,
+    "date": "2024-09-03",
+    "amount": 75.50,
+    "category": "Utilities",
+    "account": "Credit Card",
+    "note": "Electricity bill"
+  },
+  {
+    "expenseType": 1,
+    "date": "2024-09-05",
+    "amount": 500.00,
+    "category": "Freelance",
+    "account": "Bank Account",
+    "note": "Website development project"
+  },
+  {
+    "expenseType": 0,
+    "date": "2024-09-10",
+    "amount": 60.00,
+    "category": "Transportation",
+    "account": "Debit Card",
+    "note": "Monthly metro pass"
+  },
+  {
+    "expenseType": 0,
+    "date": "2024-09-12",
+    "amount": 120.00,
+    "category": "Entertainment",
+    "account": "Cash",
+    "note": "Concert tickets"
+  }
+]
