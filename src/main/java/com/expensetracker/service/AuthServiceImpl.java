@@ -4,6 +4,7 @@ import com.expensetracker.dto.AppUserDTO;
 import com.expensetracker.dto.AuthDTO;
 import com.expensetracker.dto.AuthResponseDTO;
 import com.expensetracker.model.AppUser;
+import com.expensetracker.model.Role;
 import com.expensetracker.utils.JwtUtil;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -36,8 +37,8 @@ public class AuthServiceImpl implements AuthService {
         appUser.setFullName(appUserDTO.getFullName());
         appUser.setUsername(appUserDTO.getUsername());
         appUser.setPassword(passwordEncoder.encode(appUserDTO.getPassword()));
+        appUser.setRole(Role.USER);
         userService.saveUser(appUser);
-
         AuthDTO authDTO = new AuthDTO();
         authDTO.setUsername(appUserDTO.getUsername());
         authDTO.setPassword(appUserDTO.getPassword());

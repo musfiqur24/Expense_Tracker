@@ -1,60 +1,81 @@
 package com.expensetracker.controller;
 
+import com.expensetracker.model.AppUser;
 import com.expensetracker.model.Expense;
 import com.expensetracker.service.ExpenseService;
-import com.expensetracker.utils.ExpenseDataLoader;
+import com.expensetracker.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @RestController
 public class ExpenseController {
     private final ExpenseService expenseService;
+    private final UserService userService;
 
-    public ExpenseController(ExpenseService expenseService) {
+    public ExpenseController(ExpenseService expenseService, UserService userService) {
         this.expenseService = expenseService;
+        this.userService = userService;
     }
 
     @GetMapping("/expenses/day/{date}")
-    public ResponseEntity<List<Expense>> getExpensesByDay(@PathVariable String date) {
-        try {
-            List<Expense> expenses = expenseService.getExpenseByDay(date);
-            return ResponseEntity.ok(expenses);
+    public ResponseEntity<List<Expense>> getExpensesByDay(@PathVariable String date, Authentication authentication) {
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        String username = authentication.getName();
+        AppUser user = userService.findByUsername(username);
+        List<Expense> expenses = expenseService.getExpenseByDay(date, user.getId());
+        return ResponseEntity.ok(expenses);
 
-        }
     }
 
     @GetMapping("/expenses/category/{category}/month")
-    public List<Expense> getExpensesByCategoryAndMonth(@PathVariable String category, @RequestParam String month) {
-        return ExpenseDataLoader.getExpenses().stream()
-                .filter(expense -> expense.getCategory().equalsIgnoreCase(category)
-                        && expense.getDate().startsWith(month))
-                .collect(Collectors.toList());
+    public ResponseEntity<List<Expense>> getExpensesByCategoryAndMonth(@PathVariable String category, @RequestParam String month, Authentication authentication) {
+        String username = authentication.getName();
+        AppUser user = userService.findByUsername(username);
+        List<Expense> expenses = expenseService.getExpenseByCategoryAndMonth(category, month, user.getId());
+        return ResponseEntity.ok(expenses);
     }
 
-    @GetMapping("/expenses")
-    public List<Expense> getAllExpenses() {
-        return expenseService.getAllExpense();
+    @GetMapping("/expenses/categories")
+    public ResponseEntity<List<String>> getAllExpenseCategories(Authentication authentication) {
+        String username = authentication.getName();
+        AppUser user = userService.findByUsername(username);
+        List<String> categories = expenseService.getAllExpenseCategories(user.getId());
+        if (categories.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+
+        }
+        return ResponseEntity.ok(categories);
     }
+
+    @GetMapping("/expenses/{id}")
+    public ResponseEntity<Optional<Expense>> getExpenseById(@PathVariable Long id, Authentication authentication) {
+        String username = authentication.getName();
+        AppUser user = userService.findByUsername(username);
+        return ResponseEntity.ok(expenseService.getExpenseById(id, user.getId()));
+    }
+
 
     @PostMapping("/expenses")
-    public ResponseEntity<Expense> addExpense(@RequestBody Expense expense) {
-        Expense newExpense = expenseService.addExpense(expense);
+    public ResponseEntity<Expense> addExpense(@RequestBody Expense expense, Authentication authentication) {
+
+        String username = authentication.getName();
+        AppUser user = userService.findByUsername(username);
+        Expense newExpense = expenseService.addExpense(expense, user.getId());
         return ResponseEntity.status(HttpStatus.OK).body(newExpense);
     }
 
     @PutMapping("/expenses/{id}")
-    public ResponseEntity<Expense> updateExpense(@PathVariable Long id, @RequestBody Expense updatedExpense) {
+    public ResponseEntity<Expense> updateExpense(@PathVariable Long id, @RequestBody Expense updatedExpense, Authentication authentication) {
+        String username = authentication.getName();
+        AppUser user = userService.findByUsername(username);
         try {
             updatedExpense.setId(id);
-            boolean updated = expenseService.updateExpense(updatedExpense);
+            boolean updated = expenseService.updateExpense(updatedExpense, user.getId());
             if (updated) {
                 return ResponseEntity.ok(updatedExpense);
             } else {
@@ -67,9 +88,11 @@ public class ExpenseController {
     }
 
     @DeleteMapping("/expenses/{id}")
-    public ResponseEntity<String> deleteExpense(@PathVariable Long id) {
+    public ResponseEntity<String> deleteExpense(@PathVariable Long id, Authentication authentication) {
+        String username = authentication.getName();
+        AppUser user = userService.findByUsername(username);
         try {
-            boolean deleted = expenseService.deleteExpense(id);
+            boolean deleted = expenseService.deleteExpense(id, user.getId());
             if (deleted) {
                 return ResponseEntity.ok("Expense with id " + id + "deleted sucesfully");
             } else {
