@@ -31,7 +31,6 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponseDTO registerUser(AppUserDTO appUserDTO) {
         if (userService.findByUsername(appUserDTO.getUsername()) != null) {
             return new AuthResponseDTO(null, "Error Username is already taken");
-
         }
         AppUser appUser = new AppUser();
         appUser.setFullName(appUserDTO.getFullName());
@@ -42,7 +41,6 @@ public class AuthServiceImpl implements AuthService {
         AuthDTO authDTO = new AuthDTO();
         authDTO.setUsername(appUserDTO.getUsername());
         authDTO.setPassword(appUserDTO.getPassword());
-
         return loginUser(authDTO);
     }
 

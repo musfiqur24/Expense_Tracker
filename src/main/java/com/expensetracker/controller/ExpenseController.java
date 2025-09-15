@@ -24,12 +24,10 @@ public class ExpenseController {
 
     @GetMapping("/expenses/day/{date}")
     public ResponseEntity<List<Expense>> getExpensesByDay(@PathVariable String date, Authentication authentication) {
-
         String username = authentication.getName();
         AppUser user = userService.findByUsername(username);
         List<Expense> expenses = expenseService.getExpenseByDay(date, user.getId());
         return ResponseEntity.ok(expenses);
-
     }
 
     @GetMapping("/expenses/category/{category}/month")
@@ -47,7 +45,6 @@ public class ExpenseController {
         List<String> categories = expenseService.getAllExpenseCategories(user.getId());
         if (categories.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-
         }
         return ResponseEntity.ok(categories);
     }

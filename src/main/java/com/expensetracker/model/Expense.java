@@ -23,5 +23,4 @@ public class Expense {
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private AppUser user;
-
 }
